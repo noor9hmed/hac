@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* إعادة تعيين الهوامش والحشو الافتراضية بشكل شامل */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* إزالة أي خطوط خارجية (outline) قد تظهر عند التركيز (focus) لتقليل "الحوافر" */
+    outline: none; 
+}
+
+/* تأكد من أن html و body يشغلان كامل العرض والارتفاع المتاحين */
+html, body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden; /* لمنع ظهور شريط التمرير الأفقي غير المرغوب فيه */
+    font-family: 'Roboto', sans-serif;
+    background: #f4f4f4; /* لون الخلفية */
+    color: #333;
+    display: flex;
+    flex-direction: column; /* لضمان أن الفوتر يلتصق بالأسفل */
+}
+
+header {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* مبدل اللغة في أعلى يمين الهيدر */
+.header-lang-switcher {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 2;
+    display: flex;
+    gap: 8px;
+    /* إزالة أي حدود غير مرغوبة */
+    border: none;
+}
+
+.header-lang-switcher a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    /* إزالة أي حدود غير مرغوبة عند التركيز */
+    outline: none;
+}
+
+/* الأنماط الخاصة بقسم معلومات المقهى */
+.cafe-info-container {
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 0 10px 0; /* إزالة الهوامش الجانبية للسماح بملء الشاشة */
+    width: 100%; /* اجعل العرض 100% لملء الشاشة */
+    max-width: 100%; /* تأكيد على أن أقصى عرض هو 100% */
+    border-radius: 0; /* إزالة انحناء الزوايا لملء الشاشة بالكامل */
+    overflow: hidden;
+    /* إزالة أي حدود غير مرغوبة */
+    border: none;
+}
+
+.cafe-info-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    /* إزالة أي حدود غير مرغوبة */
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+.cafe-info-header .icon {
+    font-size: 24px;
+    color: #555;
+    cursor: pointer;
+    /* إزالة أي حدود غير مرغوبة عند التركيز */
+    outline: none;
+}
+
+.cafe-cover-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    overflow: hidden;
+}
+.cafe-cover-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px; /* ستعدل في media queries */
+    position: relative;
+    margin-top: -60px;
+    z-index: 1;
+    background-color: #fff;
+}
+
+.profile-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+    margin-top: -45px;
+    margin-bottom: 15px;
+}
+
+/* حاوية جديدة لتفاصيل المقهى والساعة */
+.text-and-time-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap; /* تسمح بلف العناصر على الشاشات الصغيرة */
+    /* Padding here for smaller screens, adjusted in media queries */
+    padding-left: 0; /* تم إزالة الحشوة هنا ليتم التحكم بها بشكل أكبر في media queries */
+    padding-right: 0;
+}
+
+.cafe-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 10px; /* إضافة هامش سفلي للمسافة عند الالتفاف */
+}
+.cafe-name {
+    font-family: 'Cairo', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 2px 0;
+}
+.cafe-type {
+    font-size: 15px;
+    color: #777;
+    margin: 0;
+}
+.time-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px;
+    color: #333;
+    line-height: 20px;
+}
+.time-info img {
+    width: 20px !important;
+    height: 20px !important;
+    display: block;
+}
+
+/* شريط التصنيفات */
+.cats {
+    display: flex;
+    overflow-x: auto; /* يسمح بالتمرير الأفقي */
+    padding: 10px 15px; /* الحفاظ على حشوة داخلية للمحتوى */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    margin: 0 0 10px 0; /* إزالة الهوامش الجانبية لملء الشاشة */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    justify-content: flex-start;
+    direction: ltr; /* دائما LTR للتمرير الأفقي للتصنيفات */
+    width: 100%; /* اجعل العرض 100% لملء الشاشة */
+    max-width: 100%; /* تأكيد على أن أقصى عرض هو 100% */
+    border-radius: 0; /* إزالة انحناء الزوايا */
+    /* إزالة أي "حوافر" محتملة من شريط التمرير */
+    -ms-overflow-style: none;  /* إخفاء شريط التمرير في IE و Edge */
+    scrollbar-width: none;  /* إخفاء شريط التمرير في Firefox */
+    /* إزالة أي حدود غير مرغوبة */
+    border: none;
+}
+.cats::-webkit-scrollbar {
+    display: none; /* إخفاء شريط التمرير في Chrome, Safari, Opera */
+}
+
+.cat {
+    flex: 0 0 auto;
+    margin: 0 8px;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    color: #444;
+    white-space: nowrap;
+    transition: background-color 0.3s, color 0.3s, font-weight 0.3s;
+    /* إزالة أي حدود غير مرغوبة */
+    border: none;
+    outline: none;
+}
+.cat.active {
+    font-weight: 600;
+    color: #fff;
+    background-color: #7b2cbf;
+}
+.cat:hover:not(.active) {
+    background-color: #f0f0f0;
+}
+
+/* شريط البحث */
+.search-bar {
+    padding: 10px 15px; /* الحفاظ على حشوة داخلية للمحتوى */
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    justify-content: flex-start;
+    margin: 0 0 10px 0; /* إزالة الهوامش الجانبية لملء الشاشة */
+    width: 100%; /* اجعل العرض 100% لملء الشاشة */
+    max-width: 100%; /* تأكيد على أن أقصى عرض هو 100% */
+    border-radius: 0; /* إزالة انحناء الزوايا */
+    /* إزالة أي حدود غير مرغوبة */
+    border: none;
+}
+
+.search-bar input {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    order: 1;
+    direction: ltr !important;
+    text-align: left !important;
+    /* إزالة أي حدود افتراضية عند التركيز */
+    outline: none;
+    /* إزالة أي ظل افتراضي قد يبدو كـ "حافة" */
+    box-shadow: none;
+}
+
+/* قائمة المنتجات */
+.product-list {
+    padding: 10px 15px; /* الحفاظ على حشوة داخلية للمحتوى */
+    flex-grow: 1;
+    background-color: #f8f8f8;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0; /* إزالة الهوامش الجانبية لملء الشاشة */
+    width: 100%; /* اجعل العرض 100% لملء الشاشة */
+    max-width: 100%; /* تأكيد على أن أقصى عرض هو 100% */
+}
+
+.product-list .product {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-sizing: border-box;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease-in-out;
+    flex-direction: row;
+    direction: ltr !important; /* إجبار اتجاه LTR للحفاظ على الصور يسار */
+    /* إزالة أي حدود غير مرغوبة */
+    border: none;
+}
+
+.product-list .product:hover {
+    transform: translateX(5px);
+}
+html[dir="rtl"] .product-list .product:hover {
+    transform: translateX(5px);
+}
+
+.product-list .product img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    float: left; /* اجبار الصورة على البقاء على اليسار */
+    margin-right: 15px;
+    margin-left: 0 !important;
+}
+
+.product-list .product .info {
+    direction: ltr !important;
+    text-align: left !important;
+}
+
+.product .info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+}
+
+html[dir="rtl"] .product .info {
+    text-align: left;
+}
+
+.product .info .name,
+.product .info .price {
+    text-align: inherit;
+}
+
+.product .info .name {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+}
+.product .info .price {
+    color: #f76707;
+    margin-top: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* التذييل */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    font-size: 0.9rem;
+    margin-top: auto; /* يدفع الفوتر إلى الأسفل */
+    /* إزالة أي حدود غير مرغوبة */
+    border: none;
+    width: 100%; /* تأكيد أن الفوتر يملأ العرض */
+}
+
+/* Off-canvas menu styles */
+.off-canvas-menu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    right: 0;
+    background-color: #fff;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    /* إزالة أي حدود غير مرغوبة */
+    border: none;
+}
+
+.off-canvas-menu.open {
+    width: 80%; /* العرض الافتراضي للقائمة الجانبية على الشاشات الكبيرة */
+	max-width:300px
+}
+
+.off-canvas-menu .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+    text-decoration: none;
+    color: #333;
+    /* إزالة أي حدود غير مرغوبة عند التركيز */
+    outline: none;
+}
+
+.off-canvas-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.off-canvas-menu ul li a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #333;
+    display: block;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* إزالة أي حدود غير مرغوبة عند التركيز */
+    outline: none;
+}
+
+.off-canvas-menu ul li a:hover {
+    background-color: #f0f0f0;
+}
+
+.off-canvas-menu ul li a .icon-menu {
+    font-size: 20px;
+    color: #555;
+}
+
+/* Media Queries - التحكم في ال padding لضبط المحتوى داخل العرض الكامل */
+@media (min-width: 768px) {
+    /* زيادة ال padding للعناصر الرئيسية على أجهزة التابلت واللابتوب */
+    .cafe-info-container,
+    .cats,
+    .search-bar,
+    .product-list {
+        padding-left: 20px; 
+        padding-right: 20px;
+    }
+    .profile-section {
+        padding-left: 35px; /* زيادة الحشوة لليسار */
+        padding-right: 35px;
+    }
+    .text-and-time-container {
+        padding-left: 0; /* تم نقلها إلى العنصر الأب */
+        padding-right: 0;
+    }
+}
+
+@media (min-width: 1025px) {
+    /* زيادة ال padding أكثر على الشاشات الكبيرة جداً */
+    .cafe-info-container,
+    .cats,
+    .search-bar,
+    .product-list {
+        padding-left: 40px; 
+        padding-right: 40px;
+    }
+    .profile-section {
+        padding-left: 55px; /* زيادة الحشوة لليسار */
+        padding-right: 55px;
+    }
+}
+
+/* تعديلات للأجهزة الأصغر (الجوالات) */
+@media (max-width: 767px) {
+    .profile-logo {
+        width: 80px;
+        height: 80px;
+        border-width: 3px;
+        margin-top: -30px;
+    }
+    .profile-section {
+        padding: 15px; /* حشوة أساسية للجوالات */
+        margin-top: -40px;
+    }
+    .cafe-name {
+        font-size: 16px;
+    }
+    .cafe-type, .time-info {
+        font-size: 12px;
+    }
+    .time-info img {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    .cats, .search-bar {
+        padding: 10px 15px; /* الحفاظ على padding بسيط على الجوالات */
+    }
+    .cat {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    .off-canvas-menu.open {
+        width: 80%; /* تفتح القائمة الجانبية على عرض كامل الشاشة في الجوال */
+    }
+    /* ضمان إزالة أي انحناء للزوايا على الجوالات التي تملأ الشاشة */
+    .cafe-info-container,
+    .cats,
+    .search-bar,
+    .product-list {
+        border-radius: 0; 
+    }
+}
+
+/* ضمان أن صور القائمة تظهر بشكل جيد */
+.off-canvas-menu ul li a img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+}
+
+/* تحسين تجربة التركيز (Focus) للعناصر التفاعلية بدون "حوافر" */
+button, input[type="text"], select, textarea {
+    /* التأكد من عدم وجود حدود افتراضية تظهر كـ "حوافر" */
+    border: 1px solid #ddd; 
+    outline: none; 
+    box-shadow: none; 
+}
+
+/* إضافة تركيز مرئي لطيف عند التركيز على العناصر التفاعلية */
+button:focus, input[type="text"]:focus, select:focus, textarea:focus, .cat:focus, .header-lang-switcher a:focus, .off-canvas-menu ul li a:focus, .cafe-info-header .icon:focus {
+    border-color: #7b2cbf; /* تغيير لون الحدود عند التركيز */
+    box-shadow: 0 0 0 2px rgba(123, 44, 191, 0.3); /* إضافة ظل خفيف كإشارة للتركيز */
+}
+
+</style>
+</head>
+<body>
+
+
+
+<main>
+    <div class="cafe-info-container" dir="ltr">
+    <div class="cafe-info-header">
+        <span class="icon" id="open-menu">☰</span>
+    </div>
+    <div class="cafe-cover-image-wrapper">
+        <img src="360.jfif" alt="واجهة مقهى 360" class="cafe-cover-image">
+    </div>
+    <div class="profile-section">
+        <img src="60.jfif" alt="شعار 360 cafe" class="profile-logo">
+
+        <div class="text-and-time-container">
+            <div class="cafe-details">
+                <h1 class="cafe-name">360 cafe</h1>
+                <p class="cafe-type">Coffee & Sweet</p>
+            </div>
+
+            <div class="time-info">
+                <img src="co.png" alt="ساعة" class="time-icon">
+                <span class="hours">8:00 AM - 11:00 PM</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="cats">
+        <div class="cat active" data-category="all">All categories</div>
+        <div class="cat" data-category="breakfast">Breakfast</div>
+        <div class="cat" data-category="hotcoffee">Hot coffee</div>
+        <div class="cat" data-category="dripcoffee">Drip coffee</div>
+        <div class="cat" data-category="cold">Cold coffee</div>
+        <div class="cat" data-category="tea">Iced tea</div>
+        <div class="cat" data-category="water">Water</div>
+        <div class="cat" data-category="dessert">Dessert</div>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" placeholder="Search..." id="search" />
+    </div>
+
+    <div class="product-list" id="product-list">
+        <div class="product" data-category="breakfast" data-key="breakfast plate">
+            <img src="1.jfif" alt="Breakfast Plate" />
+            <div class="info">
+                <div class="name">Breakfast Plate</div>
+                <div class="price">2.000 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="breakfast" data-key="croissant">
+            <img src="2.jfif" alt="Croissant" />
+            <div class="info">
+                <div class="name">Croissant</div>
+                <div class="price">1.200 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="breakfast" data-key="omelette sandwich">
+            <img src="3.jfif" alt="Omelette Sandwich" />
+            <div class="info">
+                <div class="name">Omelette Sandwich</div>
+                <div class="price">1.800 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="breakfast" data-key="french toast">
+            <img src="4.jfif" alt="French Toast" />
+            <div class="info">
+                <div class="name">French Toast</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+
+        <div class="product" data-category="hotcoffee" data-key="espresso">
+            <img src="5.jfif" alt="espresso" />
+            <div class="info">
+                <div class="name">Espresso</div>
+                <div class="price">1.000 OMR</div>
+            </div>
+        </div>
+        
+        <div class="product" data-category="hotcoffee" data-key="americano">
+            <img src="6.jfif" alt="Americano" />
+            <div class="info">
+                <div class="name">Americano</div>
+                <div class="price">1.000 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="hotcoffee" data-key="flat white">
+            <img src="7.jfif" alt="flat white" />
+            <div class="info">
+                <div class="name">Flat White</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="hotcoffee" data-key="cappuccino">
+            <img src="8.jfif" alt="Cappuccino" />
+            <div class="info">
+                <div class="name">Cappuccino</div>
+                <div class="price">1.300 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="hotcoffee" data-key="latte">
+            <img src="9.jfif" alt="Latte" />
+            <div class="info">
+                <div class="name">Latte</div>
+                <div class="price">1.400 OMR</div>
+            </div>
+        </div>
+
+        <div class="product" data-category="dripcoffee" data-key="v60+90">
+            <img src="10.jfif" alt="v60+90" />
+            <div class="info">
+                <div class="name">V60+90</div>
+                <div class="price">1.900 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="dripcoffee" data-key="v60+80">
+            <img src="11.jfif" alt="v60+80" />
+            <div class="info">
+                <div class="name">V60+80</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+
+        <div class="product" data-category="cold" data-key="iced spanish latte">
+            <img src="12.jfif" alt="iced spanish latte" />
+            <div class="info">
+                <div class="name">Iced Spanish Latte</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="cold" data-key="iced caramel latte">
+            <img src="13.jfif" alt="iced caramel latte" />
+            <div class="info">
+                <div class="name">Iced Caramel Latte</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="cold" data-key="cold brew">
+            <img src="14.jfif" alt="Cold Brew" />
+            <div class="info">
+                <div class="name">Cold Brew</div>
+                <div class="price">1.800 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="cold" data-key="iced mocha">
+            <img src="15.jfif" alt="Iced Mocha" />
+            <div class="info">
+                <div class="name">Iced Mocha</div>
+                <div class="price">1.700 OMR</div>
+            </div>
+        </div>
+
+        <div class="product" data-category="tea" data-key="peach iced tea">
+            <img src="16.jfif" alt="peach iced tea" />
+            <div class="info">
+                <div class="name">Peach Iced Tea</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="tea" data-key="watermelon iced tea">
+            <img src="17.jfif" alt="watermelon iced tea" />
+            <div class="info">
+                <div class="name">Watermelon Iced Tea</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="tea" data-key="mango iced tea">
+            <img src="18.jfif" alt="Mango Iced Tea" />
+            <div class="info">
+                <div class="name">Mango Iced Tea</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+
+        <div class="product" data-category="water" data-key="water">
+            <img src="19.jfif" alt="water" />
+            <div class="info">
+                <div class="name">Water</div>
+                <div class="price">0.200 OMR</div>
+            </div>
+        </div>
+
+        <div class="product" data-category="dessert" data-key="san sebatian">
+            <img src="20.jfif" alt="san sebatian" />
+            <div class="info">
+                <div class="name">San Sebastian</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="dessert" data-key="dubai crepe">
+            <img src="22.jfif" alt="dubai crepe" />
+            <div class="info">
+                <div class="name"> Crepe</div>
+                <div class="price">1.500 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="dessert" data-key="lotus cheesecake">
+            <img src="23.jfif" alt="Lotus Cheesecake" />
+            <div class="info">
+                <div class="name">Lotus Cheesecake</div>
+                <div class="price">1.700 OMR</div>
+            </div>
+        </div>
+        <div class="product" data-category="dessert" data-key="red velvet cake">
+            <img src="21.jfif" alt="Red Velvet Cake" />
+            <div class="info">
+                <div class="name">Red Velvet Cake</div>
+                <div class="price">1.800 OMR</div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<div id="mySidenav" class="off-canvas-menu">
+  <a href="javascript:void(0)" class="closebtn" id="close-menu">&times;</a>
+  <ul>
+    <li>
+      <a href="#">
+        <span class="icon-menu">💬</span>
+        <span id="btn-ar">العربية</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <span class="icon-menu">
+          <img src="en.png" style="width: 20px !important; height: 20px !important; display: block;" alt="English Icon">
+        </span>
+        <span id="btn-en">English</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cats = document.querySelectorAll('.cat');
+    const products = document.querySelectorAll('.product');
+    const searchInput = document.getElementById('search');
+    const productList = document.getElementById('product-list');
+    
+    const openMenuBtn = document.getElementById('open-menu');
+    const closeMenuBtn = document.getElementById('close-menu');
+    const sideNav = document.getElementById('mySidenav');
+
+    let currentCategory = 'all';
+    let currentSearch = '';
+    let currentLang = 'en'; // Default language set to English
+
+    const categoriesText = {
+        all: { en: "All categories", ar: "كل الأصناف" },
+        cold: { en: "Cold coffee", ar: "قهوة باردة" },
+        tea: { en: "Iced tea", ar: "شاي مثلج" },
+        water: { en: "Water", ar: "ماء" },
+        dessert: { en: "Dessert", ar: "حلويات" },
+        breakfast: { en: "Breakfast", ar: "الإفطار" },
+        hotcoffee: { en: "Hot coffee", ar: "قهوة ساخنة" },
+        dripcoffee: { en: "Drip coffee", ar: "قهوة مقطرة" }
+    };
+    const productsText = {
+        "breakfast plate": { en: "Breakfast Plate", ar: "طبق إفطار" },
+        "croissant": { en: "Croissant", ar: "كرواسون" },
+        "omelette sandwich": { en: "Omelette Sandwich", ar: "ساندويتش أومليت" },
+        "french toast": { en: "French Toast", ar: "توست فرنسي" },
+        "espresso": { en: "Espresso", ar: "إسبرسو" },
+        "americano": { en: "Americano", ar: "أمريكانو" },
+        "flat white": { en: "Flat White", ar: "فلات وايت" },
+        "cappuccino": { en: "Cappuccino", ar: "كابتشينو" },
+        "latte": { en: "Latte", ar: "لاتيه" },
+        "v60+90": { en: "V60+90", ar: "V60+90" },
+        "v60+80": { en: "V60+80", ar: "V60+80" },
+        "iced spanish latte": { en: "Iced Spanish Latte", ar: "آيسد سبانيش لاتيه" },
+        "iced caramel latte": { en: "Iced Caramel Latte", ar: "آيسد كراميل لاتيه" },
+        "cold brew": { en: "Cold Brew", ar: "كولد برو" },
+        "iced mocha": { en: "Iced Mocha", ar: "آيسد موكا" },
+        "peach iced tea": { en: "Peach Iced Tea", ar: "شاي خوخ مثلج" },
+        "watermelon iced tea": { en: "Watermelon Iced Tea", ar: "شاي بطيخ مثلج" },
+        "mango iced tea": { en: "Mango Iced Tea", ar: "شاي مانجو مثلج" },
+        "water": { en: "Water", ar: "ماء" },
+        "san sebatian": { en: "San Sebastian", ar: "سان سبستيان" },
+        " crepe": { en: " Crepe", ar: "كريب " },
+        "lotus cheesecake": { en: "Lotus Cheesecake", ar: "تشيز كيك لوتس" },
+        "red velvet cake": { en: "Red Velvet Cake", ar: "كيك ريد فيلفت" }
+    };
+    const pricesText = {
+        "breakfast plate": { en: "2.000 OMR", ar: "2.000 OMR" },
+        "croissant": { en: "1.200 OMR", ar: "1.200 OMR" },
+        "omelette sandwich": { en: "1.800 OMR", ar: "1.800 OMR" },
+        "french toast": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "espresso": { en: "1.000 OMR", ar: "1.000 OMR" },
+        "americano": { en: "1.000 OMR", ar: "1.000 OMR" },
+        "flat white": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "cappuccino": { en: "1.300 OMR", ar: "1.300 OMR" },
+        "latte": { en: "1.400 OMR", ar: "1.400 OMR" },
+        "v60+90": { en: "1.900 OMR", ar: "1.900 OMR" },
+        "v60+80": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "iced spanish latte": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "iced caramel latte": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "cold brew": { en: "1.800 OMR", ar: "1.800 OMR" },
+        "iced mocha": { en: "1.700 OMR", ar: "1.700 OMR" },
+        "peach iced tea": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "watermelon iced tea": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "mango iced tea": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "water": { en: "0.200 OMR", ar: "0.200 OMR" },
+        "san sebatian": { en: "1.500 OMR", ar: "1.500 OMR" },
+        " crepe": { en: "1.500 OMR", ar: "1.500 OMR" },
+        "lotus cheesecake": { en: "1.700 OMR", ar: "1.700 OMR" },
+        "red velvet cake": { en: "1.800 OMR", ar: "1.800 OMR" }
+    };
+    const headerText = {
+        en: {
+            "searchPlaceholder": "Search...",
+            "menuLang": "العربية", 
+            "myOrders": "My Orders",
+            "login": "Login",
+            "callWaiter": "Call Waiter"
+        },
+        ar: {
+            "searchPlaceholder": "بحث...",
+            "menuLang": "English", 
+            "myOrders": "طلباتي",
+            "login": "تسجيل الدخول",
+            "callWaiter": "طلب النادل"
+        }
+    };
+
+    // Helper function to update common text elements outside of product/category loops
+    function updateCommonTexts(lang) {
+        document.getElementById('search').placeholder = headerText[lang].searchPlaceholder;
+        // Update menu language button text
+        document.getElementById('btn-ar').textContent = (lang === 'en') ? categoriesText['all'].ar : categoriesText['all'].en;
+        document.getElementById('btn-en').textContent = (lang === 'ar') ? categoriesText['all'].en : categoriesText['all'].ar;
+
+        // Update the menu items
+        document.getElementById('orders-menu-text').textContent = headerText[lang].myOrders;
+        document.getElementById('login-menu-text').textContent = headerText[lang].login;
+        document.getElementById('call-menu-text').textContent = headerText[lang].callWaiter;
+
+        // Update Cafe Name and Type (These are static in HTML, if they need translation, add to headerText)
+        document.querySelector('.cafe-name').textContent = (lang === 'en') ? '360 cafe' : 'مقهى 360';
+        document.querySelector('.cafe-type').textContent = (lang === 'en') ? 'Coffee & Sweet' : 'قهوة وحلويات';
+        document.querySelector('.hours').textContent = (lang === 'en') ? '8:00 AM - 11:00 PM' : '8:00 صباحاً - 11:00 مساءً';
+    }
+
+    // دالة تغيير اللغة
+    function changeLanguage(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+        // Update categories text
+        cats.forEach(cat => {
+            const catKey = cat.getAttribute('data-category');
+            cat.textContent = categoriesText[catKey][lang];
+        });
+
+        // Update products and prices text
+        products.forEach(prod => {
+            const key = prod.getAttribute('data-key');
+            prod.querySelector('.name').textContent = productsText[key][lang];
+            // Prices are always in OMR, so no need to change text content based on language, but ensure consistency
+            prod.querySelector('.price').textContent = pricesText[key].en; 
+        });
+
+        // Update other common texts like search placeholder and menu items
+        updateCommonTexts(lang);
+
+        // Re-filter products to apply language changes to visible items
+        filterProducts(currentCategory, currentSearch);
+    }
+
+    // فلترة المنتجات حسب الفئة والبحث
+    function filterProducts(category, searchTerm) {
+        currentCategory = category;
+        currentSearch = searchTerm.toLowerCase();
+
+        products.forEach(prod => {
+            const prodCat = prod.getAttribute('data-category');
+            const key = prod.getAttribute('data-key');
+
+            // Check name in current language for search
+            const nameInCurrentLang = productsText[key][currentLang].toLowerCase();
+            const categoryMatch = (category === 'all') || (prodCat === category);
+            const searchMatch = nameInCurrentLang.includes(currentSearch);
+
+            prod.style.display = (categoryMatch && searchMatch) ? 'flex' : 'none';
+        });
+        
+        // تحديث تمييز الفئة النشطة
+        cats.forEach(cat => {
+            cat.classList.toggle('active', cat.getAttribute('data-category') === category);
+        });
+    }
+
+    // أحداث تغيير الفئة
+    cats.forEach(cat => {
+        cat.addEventListener('click', () => {
+            filterProducts(cat.getAttribute('data-category'), searchInput.value);
+        });
+    });
+
+    // حدث البحث
+    searchInput.addEventListener('input', () => {
+        filterProducts(currentCategory, searchInput.value);
+    });
+
+    // أحداث أزرار اللغة
+    document.getElementById('btn-en').addEventListener('click', e => {
+        e.preventDefault();
+        changeLanguage('en');
+        sideNav.classList.remove('open'); // Close menu after selection
+    });
+    document.getElementById('btn-ar').addEventListener('click', e => {
+        e.preventDefault();
+        changeLanguage('ar');
+        sideNav.classList.remove('open'); // Close menu after selection
+    });
+
+    // أزرار القائمة الجانبية
+    openMenuBtn.addEventListener('click', () => sideNav.classList.add('open'));
+    closeMenuBtn.addEventListener('click', () => sideNav.classList.remove('open'));
+
+    // بدء الصفحة بالإنجليزية بشكل افتراضي
+    changeLanguage('en');
+});
+
+</script>
+
+</body>
+</html>
